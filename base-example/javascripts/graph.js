@@ -1,5 +1,14 @@
 var linkedByIndex = {};
 
+//Global configurations
+var r = 6;
+var widthRatio = 16;
+var heightRatio = 9;
+var transitionSpeed = 500;
+var nodeAttractionForce = -500;
+var linkdistance = 80;
+var linkStrength = 2;
+
 //Requires on existing element #graph and dependent on its size.
 function renderGraphV3(graph) {
   d3.select("svg").remove();
@@ -29,20 +38,19 @@ function renderGraphV3(graph) {
   var element = document.getElementById("graph");
   var rect = element.getBoundingClientRect();
   var width = rect.width;
-  var height = (rect.width / 16) * 9;
+  var height = (rect.width / widthRatio) * heightRatio;
 
-  //Render size - 16:9
+  //Render size - based on width and height ratio
   var w = width,
-    h = height,
-    r = 6;
+    h = height;
 
   var color = d3.scale.category20(); //d3.scaleOrdinal(d3.schemeCategory20);
 
   var force = d3.layout
     .force()
-    .charge(-500)
-    .linkDistance(60)
-    .linkStrength(2)
+    .charge(nodeAttractionForce)
+    .linkDistance(linkdistance)
+    .linkStrength(linkStrength)
     .size([width, height]);
 
   d3.select("svg").on("mousedown.zoom", null);
@@ -70,7 +78,7 @@ function renderGraphV3(graph) {
     .attr("class", "link-label")
     .attr("font-family", "Arial, Helvetica, sans-serif")
     .attr("fill", "Black")
-    .style("font", "normal 5px Arial")
+    .style("font", "normal 10px Arial")
     .attr("dy", ".35em")
     .attr("text-anchor", "middle")
     .text(function(d) {
@@ -154,7 +162,7 @@ function renderGraphV3(graph) {
   svg
     .style("opacity", 1e-6)
     .transition()
-    .duration(1000)
+    .duration(transitionSpeed * 2)
     .style("opacity", 1);
 
   node.on("click", function(d) {
@@ -224,39 +232,51 @@ function neighboring(a, b) {
 }
 
 function mouseover(d) {
+  console.log(r);
+  //Enlarge selected and neigbouring nodes
   d3.selectAll(".node")
-    .attr("r", 15)
+    .transition()
+    .duration(transitionSpeed)
+    .attr("r", function(o) {
+      return o === d ? r * 1.5 : r;
+    })
     .style("stroke", "black");
-  //d3.selectAll(".link").style("stroke","black").style("stroke-width",4);
+
+  //cloak non-neighbour nodes' links of selected
   d3.selectAll(".link")
     .transition()
-    .duration(500)
+    .duration(transitionSpeed)
     .style("opacity", function(o) {
       return o.source === d || o.target === d ? 1 : 0.1;
     });
 
+  //clock non-neightbour nodes of selected
   d3.selectAll(".node")
     .transition()
-    .duration(500)
+    .duration(transitionSpeed)
     .style("opacity", function(o) {
       return neighboring(d, o) ? 1 : 0.1;
     });
 }
 
 function mouseout() {
+  //Restore default of selected and neighbouring nodes
   d3.selectAll(".node")
-    .attr("r", 8)
+    .transition()
+    .duration(transitionSpeed)
+    .attr("r", r)
     .style("stroke", "white");
   d3.selectAll(".link")
     .style("stroke", "grey")
     .style("stroke-width", 1);
+  //Uncloak
   d3.selectAll(".link")
     .transition()
-    .duration(500)
+    .duration(transitionSpeed)
     .style("opacity", 1);
   d3.selectAll(".node")
     .transition()
-    .duration(500)
+    .duration(transitionSpeed)
     .style("opacity", 1);
 }
 
