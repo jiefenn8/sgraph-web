@@ -7,4 +7,12 @@ Collections of web app examples using REST API from [sgraph-nodejs](https://gith
 
 ## Main dependencies
 
-To be done
+* [D3.js](https://d3js.org/ "Data-Driven Documents") 
+
+## Example
+### base-example
+Displaying search results of '1'. Each blue node represents a result.
+![s1](https://user-images.githubusercontent.com/42923689/52899876-0855e780-3254-11e9-95ee-fca5e359c8bc.PNG)
+
+Selecting a node of interest.
+![s2](https://user-images.githubusercontent.com/42923689/52899877-08ee7e00-3254-11e9-8adb-88f923a9147e.PNG)
